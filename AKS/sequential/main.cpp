@@ -79,5 +79,6 @@ int aks(mpz_class n) {
 
 int main(int argc, char *argv[]) {
   mpz_class n = strtol(argv[1], nullptr, 0);
-  cout << aks(n) << endl;
+  int isPrime = aks(n);
+  cout << (isPrime ? "Prime":"Composite") << endl;
 }
