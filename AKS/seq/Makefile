@@ -1,15 +1,22 @@
 CC := g++
-CFLAGS = -std=c++11 -pthread -I ./ntl-11.5.1/include
-LDFLAGS	:= -lgmp -lntl
+CFLAGS := -fopenmp
+LDFLAGS	:= -lgmp
 
-aks: main.o aks.o
+aks: aks.o poly.o sieve.o main.o
 	$(CC) $(LDFLAGS) -o $@ $^ $(CFLAGS)
 
-main.o: main.cpp
+main.o: main.c
 	$(CC) $(LDFLAGS) -c $< $(CFLAGS)
 
-aks.o: aks.cpp aks.h
+aks.o: aks.c
 	$(CC) $(LDFLAGS) -c $< $(CFLAGS)
+
+poly.o: poly.c
+	$(CC) $(LDFLAGS) -c $< $(CFLAGS)
+
+sieve.o: sieve.c
+	$(CC) $(LDFLAGS) -c $< $(CFLAGS)
+
 
 .PHONY: clean
 clean: clean
