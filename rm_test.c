@@ -3,20 +3,35 @@
 
 #define ARRAY_MAX 512
 #define STR_MAX 128
+typedef int (*mr_func) (unsigned int x, unsigned int y);
 
-int singleTest(){
+
+//  Make sure srand can only be called once
+static char rand_initialized = 0;
+static void my_srand(){
+    if (rand_initialized == 0)
+        return;
     srand(time(NULL));
-    unsigned test_num;
+    rand_initialized = 1;
+    return;
+}
 
-    printf("Please enter the number to check:\n");
-
-    scanf("%d", &test_num);
-    
+//  Single test, check the primality of a number given by user, by default check 40 rounds
+void test_single_input(){
     unsigned testing_round = 40;
-    int result = rabin_miller_v1_parallel(test_num, testing_round);
-    int def = rabin_miller_sf(test_num, testing_round);
-    printf("Got the result for %d : %d, default value is: %d\n", test_num, result, def);
-    return 0;
+    unsigned test_num;
+    printf("Please enter the number to check:\n");
+    scanf("%d", &test_num);
+    print_primality_single_func(rm_shitty_parallel_pthread, test_num, testing_round);
+}
+
+void print_primality_single_func(mr_func func, unsigned int test_num, unsigned int test_round){
+    my_srand();
+
+    int result = func(test_num, test_round);
+    int default_result = rabin_miller_sf(test_num, test_round);
+    printf("Checking %d, got %s, default %s\n", 
+        test_num, result==1 ? "prime" : "composite", default_result==1 ? "prime" : "composite");
 }
 
 int testCorrect(){
@@ -40,7 +55,7 @@ int testCorrect(){
 }
 
 int testBench(){
-    srand(time(NULL));
+    my_srand();
 
     unsigned int test_start = 1000;
     unsigned int test_end   = 50000;
@@ -89,9 +104,11 @@ int testBench(){
 }
 
 int main(){
+    //  test_single_input();
     //  singleTest();
     //  testCorrect();
-    testBench();
+    testCorrect();
+    //  testBench();
     return 0;
 
 }
