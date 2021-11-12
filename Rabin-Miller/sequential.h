@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include "rm_utils.h"
+#include "utils.h"
 
 /*
     Rabin-Miller Algo
