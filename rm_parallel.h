@@ -13,6 +13,16 @@
 static pthread_t running_threads[PTHREAD];
 static unsigned int running_thread_num = 0;
 
+struct single_thread_RM_args
+{
+	unsigned int test_num;
+    unsigned int k;
+    unsigned int d; 
+    unsigned int s;
+    int*         ret;
+};
+
+
 int rabin_miller_shitty_parallel(unsigned int test_num, unsigned int k){
     //  First do some input validation
     if (test_num < 2)
@@ -74,22 +84,25 @@ int rabin_miller_shitty_parallel(unsigned int test_num, unsigned int k){
     return ret;
 }
 
-int single_RM_thread(unsigned int test_num, unsigned int k, unsigned int d, unsigned int s){
-    
+void single_RM_thread(struct single_thread_RM_args* args){
+    unsigned int test_num = args->test_num;
+    unsigned int k = args->k;
+    unsigned int d = args->d;
+    unsigned int s = args->s;
+    int*    ret = args->ret;
+
     for(unsigned int i=0; i<k; i++){    //  [Par-Opt]   This for loop can be performed in parallel
         unsigned int a = getRandom(test_num - 1);   //  pick a randomly in the range [2, n − 1]
-        //printf("The random number is %d\n", a);
         unsigned int x = expoMod(a, d, test_num);
-        //printf("\tGot x: %d\n", x);
-        unsigned int early_terminate = 0;
-        if((x == 1) || (x == test_num-1))   //  if x = 1 or x = n − 1 then do next LOOP
+        int early_terminate = 0;
+        if((x == 1) || (x == (test_num-1)))   //  if x = 1 or x = n − 1 then do next LOOP
             continue;
+        
         for(unsigned int r=1; r<s; r++){
             x = expoMod(x, 2, test_num);
-            //printf("\tAt round %d, got %d\n", r, x);
             if(x == 1){
-                //printf("got witness at %d\n", x);
-                return 0;
+                *ret = 0;
+                return;
             }  
             if(x == test_num-1){
                 early_terminate = 1;
@@ -98,21 +111,14 @@ int single_RM_thread(unsigned int test_num, unsigned int k, unsigned int d, unsi
         }
 
         if(!early_terminate){
-            //printf("can't early return\n");
-            return 0;   //  [Seq-Opt]: can use a goto to reduce this
-        }   
+            *ret = 0;
+            return;   //  [Seq-Opt]: can use a goto to reduce this
+        }
     }
 
-    return 1;
+    *ret = 1;
+    return;
 }
-
-struct single_thread_RM_args
-{
-	unsigned int test_num;
-    unsigned int k;
-    unsigned int d; 
-    unsigned int s;
-};
 
 int rm_shitty_parallel_pthread(unsigned int test_num, unsigned int k){
     //  In this case, the k better be the multiple of PTHREAD
@@ -132,14 +138,17 @@ int rm_shitty_parallel_pthread(unsigned int test_num, unsigned int k){
         s += 1;
     }
 
+    // printf("*** Testing %d, d: %d, s: %d\n", test_num, d, s);
     int result[PTHREAD] = {0};
+    struct single_thread_RM_args args[PTHREAD];
+
     for(int i=0; i<PTHREAD; i++){
-        struct single_thread_RM_args arg;
-        arg.test_num = test_num;
-        arg.k = k/PTHREAD;
-        arg.d = d;
-        arg.s = s;
-        result[i] = pthread_create( &(running_threads[i]), NULL, single_RM_thread, &arg);
+        args[i].test_num = test_num;
+        args[i].k = k/PTHREAD;
+        args[i].d = d;
+        args[i].s = s;
+        args[i].ret = result + i;
+        pthread_create(&(running_threads[i]), NULL, single_RM_thread, &args[i]);
     }
 
     for(int i=0; i<PTHREAD; i++){
