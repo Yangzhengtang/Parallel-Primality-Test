@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <time.h>
 #include <pthread.h>
-
 #include "rm_utils.h"
 
 #define ARRAY_MAX 512
