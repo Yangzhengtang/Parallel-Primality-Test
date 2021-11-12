@@ -19,14 +19,13 @@ unsigned int getRandom(unsigned int n){
     return ret;   //  Should consider 0
 }
 
-/*
+/*  *** Deprecated ***
     return x ← (a ^ d) mod n
     Currently is a very simple and low-efficiency function
-    //  [Seq-Opt]: group the exponent into group of two, then recursively do mapping,
-    This will make the complexity log(n)
-    //  Maybe can't get optimized in parallel version?
+    //  (Done) [Seq-Opt]: group the exponent into group of two
+    //  ? Maybe can't get optimized in parallel version?
 */
-unsigned int expoMod(unsigned int a, unsigned int d, unsigned int n){
+unsigned int slow_expoMod(unsigned int a, unsigned int d, unsigned int n){
     unsigned int x = 1;
 
     a = a % n;
@@ -38,5 +37,21 @@ unsigned int expoMod(unsigned int a, unsigned int d, unsigned int n){
     return x;
 }
 
+
+/*
+    return x ← (a ^ d) mod n
+    Faster version, take O(logn) time
+*/
+unsigned int expoMod(unsigned int a, unsigned int d, unsigned int n){
+    unsigned int ret = 1;
+
+    while (d > 0) {
+        if (d & 1) ret = ret * a % n;
+        a = a * a % n;
+        d >>= 1;
+    }
+
+    return ret;
+}
 
 #endif
