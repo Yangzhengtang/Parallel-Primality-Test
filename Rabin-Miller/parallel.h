@@ -3,8 +3,9 @@
 #include <stdio.h>
 #include <time.h>
 #include <pthread.h>
+#include <string.h>
 
-#include "rm_utils.h"
+#include "utils.h"
 
 #define ARRAY_MAX 512
 #define STR_MAX 128
@@ -83,7 +84,7 @@ int rabin_miller_shitty_parallel(unsigned int test_num, unsigned int k)
     return ret;
 }
 
-void single_RM_thread(struct single_thread_RM_args *args)
+void* single_RM_thread(struct single_thread_RM_args *args)
 {
     unsigned int test_num = args->test_num;
     unsigned int k = args->k;
