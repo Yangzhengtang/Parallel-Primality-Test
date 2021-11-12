@@ -27,6 +27,7 @@ int aks(mpz_class n) {
         }
         int failed = 0;
         if(s.isPrime(r)) {
+        // Bernstein’s improvement
             // r is prime
             // i is the multiplicative order of n modulo r
             for(mpz_class i = 1; i <= limit; i++) {
@@ -65,8 +66,8 @@ int aks(mpz_class n) {
         compare.setCoef(a, 0);
         mpz_pX res(intr);
         mpz_pX base(1);
-        base.setCoef(a,0);
-        base.setCoef(1,1);
+        base.setCoef(a, 0);
+        base.setCoef(1, 1);
 
         mpz_pX_mod_power(res, base, n, n, intr);
         if(!res.isEqual(compare)) {
