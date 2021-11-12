@@ -6,6 +6,13 @@
 #include <stdio.h>
 #include <time.h>
 
+#define _64BIT_
+
+#ifndef  _64BIT_
+    typedef unsigned int rm_int;
+#else
+    typedef unsigned long long rm_int;
+#endif
 
 /*
     A helper function to get a random value in the range [2, n]

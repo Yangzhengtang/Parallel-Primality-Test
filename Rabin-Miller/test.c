@@ -1,38 +1,4 @@
-#include "sequential.h"
-#include "parallel.h"
-
-#define ARRAY_MAX 512
-#define STR_MAX 128
-typedef int (*mr_func)(unsigned int x, unsigned int y);
-
-#define IMPL_COUNT 5 //  Total functions implemented
-static mr_func mr_func_table[IMPL_COUNT] = {
-    rabin_miller_sf,
-    rabin_miller_shitty,
-    rabin_miller_shitty_parallel,
-    rabin_miller_v1_parallel,
-    rm_shitty_parallel_pthread};
-
-static char mr_func_name_table[ARRAY_MAX][STR_MAX] = {
-    "rabin_miller_sf",
-    "rabin_miller_shitty",
-    "rabin_miller_shitty_parallel",
-    "rabin_miller_v1_parallel",
-    "rm_shitty_parallel_pthread"};
-
-//  Make sure srand can only be called once
-static char rand_initialized = 0;
-static inline void my_srand()
-{
-    if (rand_initialized == 0)
-        return;
-    omp_set_dynamic(0);
-    omp_set_num_threads(PTHREAD);
-    srand(time(NULL));
-    rand_initialized = 1;
-    return;
-}
-
+#include "test_utils.h"
 /*
     Test for the implementation:
         print_primality_single_func
@@ -61,7 +27,7 @@ void print_single_input()
     unsigned test_num;
     printf("Please enter the number to check:\n");
     scanf("%d", &test_num);
-    print_primality_single_func(rm_shitty_parallel_pthread, test_num, testing_round);
+    print_primality_single_func(rabin_miller_v2_parallel, test_num, testing_round);
 }
 
 void print_prime_in_range(int start, int end, int round, int f_index)
@@ -91,6 +57,7 @@ void print_prime_under_100_for_all()
 
 int main()
 {
-    print_single_input();
+    //  print_single_input();
+    print_prime_under_100_for_all();
     return 0;
 }

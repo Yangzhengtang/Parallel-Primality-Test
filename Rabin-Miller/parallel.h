@@ -4,11 +4,8 @@
 #include <time.h>
 #include <pthread.h>
 #include <string.h>
-
 #include "utils.h"
 
-#define ARRAY_MAX 512
-#define STR_MAX 128
 #define PTHREAD 8
 
 static pthread_t running_threads[PTHREAD];
@@ -251,4 +248,76 @@ int rabin_miller_v1_parallel(unsigned int test_num, unsigned int k)
     }
 
     return 0;
+}
+
+//  This time, ask openMP to break all running threads
+int rabin_miller_v2_parallel(unsigned int test_num, unsigned int k)
+{
+    //  First do some input validation
+    if (test_num < 2)
+        return 0;
+    if (test_num == 2)
+        return 1;
+
+    //  write n − 1 as (2^s)*d with d odd by factoring powers of 2 from n − 1
+    unsigned int d = test_num - 1;
+    unsigned int s = 0;
+
+    //  Keep dividing the temp_num until it is an odd number
+    while (!(d & 1))
+    {
+        d = d >> 1;
+        s += 1;
+    }
+
+    int *isComposite = (int *)(malloc(sizeof(int) * (k + 1)));
+    for(int i=0; i<k+1; i++)  isComposite[i] = 1;
+    volatile char shouldStop = 0;
+
+#pragma omp parallel for num_threads(PTHREAD)
+    for (unsigned int i = 0; i < k; i++)
+    {                     
+        if(shouldStop)
+            continue;
+        unsigned int a = getRandom(test_num - 1); //  pick a randomly in the range [2, n − 1]
+        unsigned int x = expoMod(a, d, test_num);
+        int early_terminate = 0;
+        if ((x == 1) || (x == test_num - 1)) //  if x = 1 or x = n − 1 then do next LOOP
+        {
+            continue;
+        }
+        for (unsigned int r = 1; r < s; r++)
+        {
+            if(shouldStop)  //  Some other thread prove that it's a composite
+            {
+                break;
+            }
+            x = expoMod(x, 2, test_num);
+            if (x == 1)
+            {
+                break;
+            }
+            if (x == test_num - 1)
+            {
+                early_terminate = 1;
+                break;
+            }
+        }
+        //  printf("RM from thread = %d, i is: %d\n", omp_get_thread_num(), i);
+
+        if (!early_terminate){
+            isComposite[k] = 0;
+            shouldStop = 1;
+        }
+             //  [Seq-Opt]: can use a goto to reduce this
+        else
+            isComposite[k] = 1;
+    }
+
+    int ret = 1;
+    for (unsigned int i = 0; i < k; i++)
+        ret = ret && isComposite[k];
+
+    free(isComposite);
+    return ret;
 }
