@@ -6,15 +6,15 @@
         print_prime_in_range
         print_prime_under_100_for_all
 */
-void print_primality_single_func(mr_func func, unsigned int test_num, unsigned int test_round)
+void print_primality_single_func(mr_func func, rm_int test_num, rm_int test_round)
 {
     my_srand();
 
     int result = func(test_num, test_round);
     
-    printf("Checking %d, got [%s]\n", test_num, result == 1 ? "prime" : "composite");
+    printf("Checking " _rm_pformat_ ", got [%s]\n", test_num, result == 1 ? "prime" : "composite");
     //  int default_result = rabin_miller_sf(test_num, test_round);
-    //  printf("Checking %d, got %s, default %s\n",
+    //  printf("Checking _rm_pformat_, got %s, default %s\n",
     //         test_num, result == 1 ? "prime" : "composite", default_result == 1 ? "prime" : "composite");
 }
 
@@ -23,22 +23,22 @@ void print_single_input()
 {
     my_srand();
 
-    unsigned testing_round = 40;
-    unsigned test_num;
+    rm_int testing_round = 40;
+    rm_int test_num;
     printf("Please enter the number to check:\n");
-    scanf("%d", &test_num);
+    scanf(_rm_pformat_, &test_num);
     print_primality_single_func(rabin_miller_v2_parallel, test_num, testing_round);
 }
 
-void print_prime_in_range(int start, int end, int round, int f_index)
+void print_prime_in_range(rm_int start, rm_int end, rm_int round, int f_index)
 {
     my_srand();
 
     mr_func func = mr_func_table[f_index];
-    for (unsigned int n = start; n < end; n++)
+    for (rm_int n = start; n < end; n++)
     {
         if (func(n, round))
-            printf("\t\t%d\n", n);
+            printf("\t\t_rm_pformat_\n", n);
     }
 }
 
@@ -57,7 +57,7 @@ void print_prime_under_100_for_all()
 
 int main()
 {
-    //  print_single_input();
-    print_prime_under_100_for_all();
+    print_single_input();
+    //  print_prime_under_100_for_all();
     return 0;
 }

@@ -12,14 +12,14 @@ static pthread_t running_threads[PTHREAD];
 
 struct single_thread_RM_args
 {
-    unsigned int test_num;
-    unsigned int k;
-    unsigned int d;
-    unsigned int s;
+    rm_int test_num;
+    rm_int k;
+    rm_int d;
+    rm_int s;
     int *ret;
 };
 
-int rabin_miller_shitty_parallel(unsigned int test_num, unsigned int k)
+int rabin_miller_shitty_parallel(rm_int test_num, rm_int k)
 {
     //  First do some input validation
     if (test_num < 2)
@@ -28,8 +28,8 @@ int rabin_miller_shitty_parallel(unsigned int test_num, unsigned int k)
         return 1;
 
     //  write n − 1 as (2^s)*d with d odd by factoring powers of 2 from n − 1
-    unsigned int d = test_num - 1;
-    unsigned int s = 0;
+    rm_int d = test_num - 1;
+    rm_int s = 0;
 
     //  Keep dividing the temp_num until it is an odd number
     while (!(d & 1))
@@ -41,16 +41,16 @@ int rabin_miller_shitty_parallel(unsigned int test_num, unsigned int k)
     int *isComposite = (int *)(malloc(sizeof(int) * (k + 1)));
 
 #pragma omp parallel for num_threads(PTHREAD)
-    for (unsigned int i = 0; i < k; i++)
+    for (rm_int i = 0; i < k; i++)
     {                                             //  [Par-Opt]   This for loop can be performed in parallel
-        unsigned int a = getRandom(test_num - 1); //  pick a randomly in the range [2, n − 1]
-        unsigned int x = expoMod(a, d, test_num);
+        rm_int a = getRandom(test_num - 1); //  pick a randomly in the range [2, n − 1]
+        rm_int x = expoMod(a, d, test_num);
         int early_terminate = 0;
         if ((x == 1) || (x == test_num - 1)) //  if x = 1 or x = n − 1 then do next LOOP
         {
             early_terminate = 1;
         }
-        for (unsigned int r = 1; r < s; r++)
+        for (rm_int r = 1; r < s; r++)
         {
             if (early_terminate)
                 break;
@@ -74,7 +74,7 @@ int rabin_miller_shitty_parallel(unsigned int test_num, unsigned int k)
     }
 
     int ret = 1;
-    for (unsigned int i = 0; i < k; i++)
+    for (rm_int i = 0; i < k; i++)
         ret = ret && isComposite[k];
 
     free(isComposite);
@@ -83,21 +83,21 @@ int rabin_miller_shitty_parallel(unsigned int test_num, unsigned int k)
 
 void* single_RM_thread(struct single_thread_RM_args *args)
 {
-    unsigned int test_num = args->test_num;
-    unsigned int k = args->k;
-    unsigned int d = args->d;
-    unsigned int s = args->s;
+    rm_int test_num = args->test_num;
+    rm_int k = args->k;
+    rm_int d = args->d;
+    rm_int s = args->s;
     int *ret = args->ret;
 
-    for (unsigned int i = 0; i < k; i++)
+    for (rm_int i = 0; i < k; i++)
     {                                             //  [Par-Opt]   This for loop can be performed in parallel
-        unsigned int a = getRandom(test_num - 1); //  pick a randomly in the range [2, n − 1]
-        unsigned int x = expoMod(a, d, test_num);
+        rm_int a = getRandom(test_num - 1); //  pick a randomly in the range [2, n − 1]
+        rm_int x = expoMod(a, d, test_num);
         int early_terminate = 0;
         if ((x == 1) || (x == (test_num - 1))) //  if x = 1 or x = n − 1 then do next LOOP
             continue;
 
-        for (unsigned int r = 1; r < s; r++)
+        for (rm_int r = 1; r < s; r++)
         {
             x = expoMod(x, 2, test_num);
             if (x == 1)
@@ -123,7 +123,7 @@ void* single_RM_thread(struct single_thread_RM_args *args)
     return;
 }
 
-int rm_shitty_parallel_pthread(unsigned int test_num, unsigned int k)
+int rm_shitty_parallel_pthread(rm_int test_num, rm_int k)
 {
     //  In this case, the k better be the multiple of PTHREAD
     if (test_num < 2)
@@ -132,8 +132,8 @@ int rm_shitty_parallel_pthread(unsigned int test_num, unsigned int k)
         return 1;
 
     //  write n − 1 as (2^s)*d with d odd by factoring powers of 2 from n − 1
-    unsigned int d = test_num - 1;
-    unsigned int s = 0;
+    rm_int d = test_num - 1;
+    rm_int s = 0;
 
     //  Keep dividing the temp_num until it is an odd number
     while (!(d & 1))
@@ -170,7 +170,7 @@ int rm_shitty_parallel_pthread(unsigned int test_num, unsigned int k)
     return ret;
 }
 
-int rabin_miller_v1_parallel(unsigned int test_num, unsigned int k)
+int rabin_miller_v1_parallel(rm_int test_num, rm_int k)
 {
     //  First do some input validation
     if (test_num < 2)
@@ -179,8 +179,8 @@ int rabin_miller_v1_parallel(unsigned int test_num, unsigned int k)
         return 1;
 
     //  write n − 1 as (2^s)*d with d odd by factoring powers of 2 from n − 1
-    unsigned int d = test_num - 1;
-    unsigned int s = 0;
+    rm_int d = test_num - 1;
+    rm_int s = 0;
 
     //  Keep dividing the temp_num until it is an odd number
     while (!(d & 1))
@@ -189,8 +189,8 @@ int rabin_miller_v1_parallel(unsigned int test_num, unsigned int k)
         s += 1;
     }
 
-    unsigned int *randoms = (unsigned int *)(malloc(sizeof(unsigned int) * (k + 1)));
-    unsigned int *temp = (unsigned int *)(malloc(sizeof(unsigned int) * (k + 1)));
+    rm_int *randoms = (rm_int *)(malloc(sizeof(rm_int) * (k + 1)));
+    rm_int *temp = (rm_int *)(malloc(sizeof(rm_int) * (k + 1)));
     int *terminate = (int *)(malloc(sizeof(int) * (k + 1)));
     memset(terminate, 0, sizeof(int) * (k + 1));
 
@@ -198,7 +198,7 @@ int rabin_miller_v1_parallel(unsigned int test_num, unsigned int k)
 
 //  Generate Random Number, and do the first round calculation
 #pragma omp parallel for num_threads(PTHREAD)
-    for (unsigned int i = 0; i < k; i++)
+    for (rm_int i = 0; i < k; i++)
     {
         randoms[i] = getRandom(test_num - 1);
         temp[i] = expoMod(randoms[i], d, test_num);
@@ -208,17 +208,17 @@ int rabin_miller_v1_parallel(unsigned int test_num, unsigned int k)
 
     //  After first round, we can determine
     int all_done = 1;
-    for (unsigned int i = 0; i < k; i++)
+    for (rm_int i = 0; i < k; i++)
     {
         all_done = all_done && terminate[i];
     }
     if (all_done)
         return 1;
 
-    for (unsigned int r = 1; r < s; r++)
+    for (rm_int r = 1; r < s; r++)
     {
 #pragma omp parallel for num_threads(PTHREAD)
-        for (unsigned int i = 0; i < k; i++)
+        for (rm_int i = 0; i < k; i++)
         {
             if (terminate[i] != 1)
             {
@@ -229,7 +229,7 @@ int rabin_miller_v1_parallel(unsigned int test_num, unsigned int k)
         }
 
         //  Sequential examine
-        for (unsigned int i = 0; i < k; i++)
+        for (rm_int i = 0; i < k; i++)
         {
             if (terminate[i] == 0 && temp[i] == 1) //  Any time we got this answer, it should be composite
             {
@@ -239,7 +239,7 @@ int rabin_miller_v1_parallel(unsigned int test_num, unsigned int k)
         }
 
         all_done = 1;
-        for (unsigned int i = 0; i < k; i++)
+        for (rm_int i = 0; i < k; i++)
         {
             all_done = all_done && (terminate[i]);
         }
@@ -247,11 +247,15 @@ int rabin_miller_v1_parallel(unsigned int test_num, unsigned int k)
             return 1;
     }
 
+    free(randoms);
+    free(temp);
+    free(terminate);
+
     return 0;
 }
 
 //  This time, ask openMP to break all running threads
-int rabin_miller_v2_parallel(unsigned int test_num, unsigned int k)
+int rabin_miller_v2_parallel(rm_int test_num, rm_int k)
 {
     //  First do some input validation
     if (test_num < 2)
@@ -260,8 +264,8 @@ int rabin_miller_v2_parallel(unsigned int test_num, unsigned int k)
         return 1;
 
     //  write n − 1 as (2^s)*d with d odd by factoring powers of 2 from n − 1
-    unsigned int d = test_num - 1;
-    unsigned int s = 0;
+    rm_int d = test_num - 1;
+    rm_int s = 0;
 
     //  Keep dividing the temp_num until it is an odd number
     while (!(d & 1))
@@ -275,18 +279,18 @@ int rabin_miller_v2_parallel(unsigned int test_num, unsigned int k)
     volatile char shouldStop = 0;
 
 #pragma omp parallel for num_threads(PTHREAD)
-    for (unsigned int i = 0; i < k; i++)
+    for (rm_int i = 0; i < k; i++)
     {                     
         if(shouldStop)
             continue;
-        unsigned int a = getRandom(test_num - 1); //  pick a randomly in the range [2, n − 1]
-        unsigned int x = expoMod(a, d, test_num);
+        rm_int a = getRandom(test_num - 1); //  pick a randomly in the range [2, n − 1]
+        rm_int x = expoMod(a, d, test_num);
         int early_terminate = 0;
         if ((x == 1) || (x == test_num - 1)) //  if x = 1 or x = n − 1 then do next LOOP
         {
             continue;
         }
-        for (unsigned int r = 1; r < s; r++)
+        for (rm_int r = 1; r < s; r++)
         {
             if(shouldStop)  //  Some other thread prove that it's a composite
             {
@@ -315,7 +319,7 @@ int rabin_miller_v2_parallel(unsigned int test_num, unsigned int k)
     }
 
     int ret = 1;
-    for (unsigned int i = 0; i < k; i++)
+    for (rm_int i = 0; i < k; i++)
         ret = ret && isComposite[k];
 
     free(isComposite);

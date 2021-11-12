@@ -4,7 +4,7 @@
 #define ARRAY_MAX 512
 #define STR_MAX 128
 
-typedef int (*mr_func)(unsigned int x, unsigned int y);
+typedef int (*mr_func)(rm_int x, rm_int y);
 
 #define IMPL_COUNT 6 //  Total functions implemented
 static mr_func mr_func_table[IMPL_COUNT] = {
