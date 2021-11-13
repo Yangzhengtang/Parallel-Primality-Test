@@ -28,32 +28,34 @@
 /*
     Return: 0 if n is composite, 1 if probably prime
 */
-int rabin_miller_sf(unsigned int test_num, unsigned int k){
+int rabin_miller_sf(rm_int test_num, rm_int k){
     //  First do some input validation
     if(test_num < 2)    return 0;
     if(test_num == 2)   return 1;
-
+    
     //  write n − 1 as (2^s)*d with d odd by factoring powers of 2 from n − 1
-    unsigned int d = test_num - 1;
-    unsigned int s = 0;
+    rm_int d = test_num - 1;
+    rm_int s = 0;
 
     //  Keep dividing the temp_num until it is an odd number
-    while(!(d & 1)){
+    while(!(d & 0x01)){
         d = d >> 1;
         s += 1;
     }
 
-    for(unsigned int i=0; i<k; i++){    //  [Par-Opt]   This for loop can be performed in parallel
-        unsigned int a = getRandom(test_num - 1);   //  pick a randomly in the range [2, n − 1]
-        //printf("The random number is %d\n", a);
-        unsigned int x = expoMod(a, d, test_num);
-        //printf("\tGot x: %d\n", x);
-        unsigned int early_terminate = 0;
+    //  printf("d: %llu, s: %llu\n", d, s);
+
+    for(rm_int i=0; i<k; i++){    //  [Par-Opt]   This for loop can be performed in parallel
+        rm_int a = getRandom(test_num - 1);   //  pick a randomly in the range [2, n − 1]
+        //  printf("The random number is %llu\n", a);
+        rm_int x = expoMod(a, d, test_num);
+        //  printf("\tGot x: %llu\n", x);
+        int early_terminate = 0;
         if((x == 1) || (x == test_num-1))   //  if x = 1 or x = n − 1 then do next LOOP
             continue;
-        for(unsigned int r=1; r<s; r++){
+        for(rm_int r=1; r<s; r++){
             x = expoMod(x, 2, test_num);
-            //printf("\tAt round %d, got %d\n", r, x);
+            //  printf("\tAt round %llu, got %llu\n", r, x);
             if(x == 1){
                 //printf("got witness at %d\n", x);
                 return 0;
@@ -70,6 +72,7 @@ int rabin_miller_sf(unsigned int test_num, unsigned int k){
         }   
     }
 
+    //  printf("Find prime: %llu\n", test_num);
     return 1;
 }
 
@@ -78,7 +81,7 @@ int rabin_miller_sf(unsigned int test_num, unsigned int k){
     Return: 0 if n is composite, 1 if probably prime
     A shitty version, should be very very slow
 */
-int rabin_miller_shitty(unsigned int test_num, unsigned int k){
+int rabin_miller_shitty(rm_int test_num, rm_int k){
     //  First do some input validation
     if (test_num < 2)
         return 0;
@@ -86,8 +89,8 @@ int rabin_miller_shitty(unsigned int test_num, unsigned int k){
         return 1;
 
     //  write n − 1 as (2^s)*d with d odd by factoring powers of 2 from n − 1
-    unsigned int d = test_num - 1;
-    unsigned int s = 0;
+    rm_int d = test_num - 1;
+    rm_int s = 0;
 
     //  Keep dividing the temp_num until it is an odd number
     while (!(d & 1))
@@ -96,19 +99,19 @@ int rabin_miller_shitty(unsigned int test_num, unsigned int k){
         s += 1;
     }
 
-    int *isComposite = (int*) (malloc(sizeof(int) * k));
+    int *loclIsPrime = (int*) (malloc(sizeof(int) * (k+1)));
 
-    for (unsigned int i = 0; i < k; i++)
+    for (rm_int i = 0; i < k; i++)
     { //  [Par-Opt]   This for loop can be performed in parallel
-        unsigned int a = getRandom(test_num - 1); //  pick a randomly in the range [2, n − 1]
-        unsigned int x = expoMod(a, d, test_num);
+        rm_int a = getRandom(test_num - 1); //  pick a randomly in the range [2, n − 1]
+        rm_int x = expoMod(a, d, test_num);
         int early_terminate = 0;
         if ((x == 1) || (x == test_num - 1)) //  if x = 1 or x = n − 1 then do next LOOP
         {
             early_terminate = 1;
         }
 
-        for (unsigned int r = 1; r < s; r++)
+        for (rm_int r = 1; r < s; r++)
         {
             if (early_terminate)
                 break;
@@ -123,18 +126,20 @@ int rabin_miller_shitty(unsigned int test_num, unsigned int k){
                 break;
             }
         }
+
         //  printf("RM from thread = %d, i is: %d\n", omp_get_thread_num(), i);
         if (!early_terminate)
-            isComposite[k] = 0; //  [Seq-Opt]: can use a goto to reduce this
+            loclIsPrime[i] = 0; //  [Seq-Opt]: can use a goto to reduce this
         else
-            isComposite[k] = 1;
+            loclIsPrime[i] = 1;
     }
 
     int ret = 1;
-    for (unsigned int i = 0; i < k; i++)
-        ret = ret && isComposite[k];
+    for (rm_int i = 0; i < k; i++)
+        ret = ret && loclIsPrime[i];
 
-    free(isComposite);
+
+    free(loclIsPrime);
     return ret;
 }
 

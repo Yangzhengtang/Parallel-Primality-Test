@@ -6,6 +6,15 @@
 #include <stdio.h>
 #include <time.h>
 
+#define _64BIT_
+
+#ifndef  _64BIT_
+    typedef unsigned int rm_int;
+    #define _rm_pformat_ "%u"
+#else
+    typedef unsigned long long rm_int;
+    #define _rm_pformat_ "%llu"
+#endif
 
 /*
     A helper function to get a random value in the range [2, n]
@@ -13,10 +22,16 @@
     to generate real random number.
     //  In parallel version, we need to find a way to generate efficiently
 */
-unsigned int getRandom(unsigned int n){
-    unsigned int r = rand() % (n+1);
-    unsigned int ret = r > 2 ? r : 2;
-    return ret;   //  Should consider 0
+rm_int getRandom(rm_int n){
+    rm_int r = rand() % (n+1);
+    rm_int ret = r > 2 ? r : 2;
+#ifndef _64BIT_
+    return ret;
+#else
+    ret = r * r;
+    ret = ret > 2 ? r : 2;
+    return ret;
+#endif
 }
 
 /*  *** Deprecated ***
@@ -25,11 +40,11 @@ unsigned int getRandom(unsigned int n){
     //  (Done) [Seq-Opt]: group the exponent into group of two
     //  ? Maybe can't get optimized in parallel version?
 */
-unsigned int slow_expoMod(unsigned int a, unsigned int d, unsigned int n){
-    unsigned int x = 1;
+rm_int slow_expoMod(rm_int a, rm_int d, rm_int n){
+    rm_int x = 1;
 
     a = a % n;
-    for(unsigned int i=0; i<d; i++){
+    for(rm_int i=0; i<d; i++){
         x = x * a;
         x = x % n;
     }
@@ -42,16 +57,18 @@ unsigned int slow_expoMod(unsigned int a, unsigned int d, unsigned int n){
     return x ← (a ^ d) mod n
     Faster version, take O(logn) time
 */
-unsigned int expoMod(unsigned int a, unsigned int d, unsigned int n){
-    unsigned int ret = 1;
+rm_int expoMod(rm_int a, rm_int d, rm_int n){
+    __int128_t ret = 1;
+    __int128_t internal_a = (__int128_t)a;
+    __int128_t internal_n = (__int128_t)n;
 
     while (d > 0) {
-        if (d & 1) ret = ret * a % n;
-        a = a * a % n;
+        if (d & 1) ret = ret * internal_a % internal_n;
+        internal_a = internal_a * internal_a % internal_n;
         d >>= 1;
     }
 
-    return ret;
+    return (rm_int)ret;
 }
 
 #endif
