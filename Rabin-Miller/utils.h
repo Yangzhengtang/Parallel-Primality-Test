@@ -58,15 +58,17 @@ rm_int slow_expoMod(rm_int a, rm_int d, rm_int n){
     Faster version, take O(logn) time
 */
 rm_int expoMod(rm_int a, rm_int d, rm_int n){
-    rm_int ret = 1;
+    __int128_t ret = 1;
+    __int128_t internal_a = (__int128_t)a;
+    __int128_t internal_n = (__int128_t)n;
 
     while (d > 0) {
-        if (d & 1) ret = ret * a % n;
-        a = a * a % n;
+        if (d & 1) ret = ret * internal_a % internal_n;
+        internal_a = internal_a * internal_a % internal_n;
         d >>= 1;
     }
 
-    return ret;
+    return (rm_int)ret;
 }
 
 #endif

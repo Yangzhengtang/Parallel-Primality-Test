@@ -27,7 +27,7 @@ void print_single_input()
     rm_int test_num;
     printf("Please enter the number to check:\n");
     scanf(_rm_pformat_, &test_num);
-    print_primality_single_func(rabin_miller_pthread_parallel_opt, test_num, testing_round);
+    print_primality_single_func(rabin_miller_sf, test_num, testing_round);
 }
 
 void print_prime_in_range(rm_int start, rm_int end, rm_int round, int f_index)
@@ -38,7 +38,7 @@ void print_prime_in_range(rm_int start, rm_int end, rm_int round, int f_index)
     for (rm_int n = start; n < end; n++)
     {
         if (func(n, round))
-            printf("\t\t_rm_pformat_\n", n);
+            printf("\t\t" _rm_pformat_ "\n", n);
     }
 }
 
@@ -55,9 +55,22 @@ void print_prime_under_100_for_all()
     }
 }
 
+void print_prime_under_1000_for_all()
+{
+    my_srand();
+
+    printf("----- Check the correctness for all Implementations -----\n");
+
+    for (int i = 0; i < IMPL_COUNT; i++)
+    {
+        printf("\tNow checking [%s]...\n", mr_func_name_table[i]);
+        print_prime_in_range(3, 1000, 40, i);
+    }
+}
+
 int main()
 {
-    print_single_input();
-    //  print_prime_under_100_for_all();
+    //  print_single_input();
+    print_prime_under_1000_for_all();
     return 0;
 }

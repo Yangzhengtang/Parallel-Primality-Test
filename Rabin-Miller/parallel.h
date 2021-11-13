@@ -5,9 +5,9 @@
 #include <string.h>
 #include "utils.h"
 
-#define PTHREAD 8
+#define PTHREAD 1
 
-#define MAX_ROUND  0xFFFF
+#define MAX_ROUND  (rm_int)(0xFFFF)
 static char isPrime[MAX_ROUND] = {0};
 
 int rabin_miller_shitty_parallel(rm_int test_num, rm_int k)
@@ -29,7 +29,8 @@ int rabin_miller_shitty_parallel(rm_int test_num, rm_int k)
         s += 1;
     }
 
-    int *isPrime = (int *)(malloc(sizeof(int) * (k + 1)));
+    int *localisPrime = (int *)(malloc(sizeof(int) * (k + 1)));
+    memset(localisPrime, 0, sizeof(int) * (k + 1));
 
 #pragma omp parallel for num_threads(PTHREAD)
     for (rm_int i = 0; i < k; i++)
@@ -59,16 +60,16 @@ int rabin_miller_shitty_parallel(rm_int test_num, rm_int k)
         //  printf("RM from thread = %d, i is: %d\n", omp_get_thread_num(), i);
 
         if (!early_terminate)
-            isPrime[k] = 0; //  [Seq-Opt]: can use a goto to reduce this
+            localisPrime[i] = 0; //  [Seq-Opt]: can use a goto to reduce this
         else
-            isPrime[k] = 1;
+            localisPrime[i] = 1;
     }
 
     int ret = 1;
     for (rm_int i = 0; i < k; i++)
-        ret = ret && isPrime[k];
+        ret = ret && localisPrime[i];
 
-    free(isPrime);
+    free(localisPrime);
     return ret;
 }
 
@@ -93,7 +94,7 @@ int rabin_miller_v1_parallel(rm_int test_num, rm_int k)
     }
 
     rm_int *randoms = (rm_int *)(malloc(sizeof(rm_int) * (k + 1)));
-    rm_int *temp = (rm_int *)(malloc(sizeof(rm_int) * (k + 1)));
+    rm_int *mytemp = (rm_int *)(malloc(sizeof(rm_int) * (k + 1)));
     int *terminate = (int *)(malloc(sizeof(int) * (k + 1)));
     memset(terminate, 0, sizeof(int) * (k + 1));
 
@@ -104,8 +105,8 @@ int rabin_miller_v1_parallel(rm_int test_num, rm_int k)
     for (rm_int i = 0; i < k; i++)
     {
         randoms[i] = getRandom(test_num - 1);
-        temp[i] = expoMod(randoms[i], d, test_num);
-        if ((temp[i] == 1) || (temp[i] == test_num - 1))
+        mytemp[i] = expoMod(randoms[i], d, test_num);
+        if ((mytemp[i] == 1) || (mytemp[i] == test_num - 1))
             terminate[i] = 1;
     }
 
@@ -115,8 +116,13 @@ int rabin_miller_v1_parallel(rm_int test_num, rm_int k)
     {
         all_done = all_done && terminate[i];
     }
-    if (all_done)
+    if (all_done){
+        free(randoms);
+        free(mytemp);
+        free(terminate);
         return 1;
+    }
+        
 
     for (rm_int r = 1; r < s; r++)
     {
@@ -125,8 +131,8 @@ int rabin_miller_v1_parallel(rm_int test_num, rm_int k)
         {
             if (terminate[i] != 1)
             {
-                temp[i] = expoMod(temp[i], 2, test_num);
-                if (temp[i] == test_num - 1)
+                mytemp[i] = expoMod(mytemp[i], 2, test_num);
+                if (mytemp[i] == test_num - 1)
                     terminate[i] = 1;
             }
         }
@@ -134,9 +140,11 @@ int rabin_miller_v1_parallel(rm_int test_num, rm_int k)
         //  Sequential examine
         for (rm_int i = 0; i < k; i++)
         {
-            if (terminate[i] == 0 && temp[i] == 1) //  Any time we got this answer, it should be composite
+            if (terminate[i] == 0 && mytemp[i] == 1) //  Any time we got this answer, it should be composite
             {
-                //printf("When test %d, terminate here, i: %d, r: %d\n", test_num, i, r);
+                free(randoms);
+                free(mytemp);
+                free(terminate);
                 return 0;
             }
         }
@@ -147,13 +155,18 @@ int rabin_miller_v1_parallel(rm_int test_num, rm_int k)
             all_done = all_done && (terminate[i]);
         }
         if (all_done)
+        {
+            free(randoms);
+            free(mytemp);
+            free(terminate);
             return 1;
+        }       
     }
 
-    free(randoms);
-    free(temp);
-    free(terminate);
 
+    free(randoms);
+    free(mytemp);
+    free(terminate);
     return 0;
 }
 
@@ -268,8 +281,8 @@ int rabin_miller_v2_parallel(rm_int test_num, rm_int k)
         s += 1;
     }
 
-    int *isPrime = (int *)(malloc(sizeof(int) * (k + 1)));
-    for(int i=0; i<k+1; i++)  isPrime[i] = 1;
+    int *localisPrime = (int *)(malloc(sizeof(int) * (k + 1)));
+    for(int i=0; i<k+1; i++)  localisPrime[i] = 1;
     volatile char shouldStop = 0;
 
 #pragma omp parallel for num_threads(PTHREAD)
@@ -304,19 +317,19 @@ int rabin_miller_v2_parallel(rm_int test_num, rm_int k)
         //  printf("RM from thread = %d, i is: %d\n", omp_get_thread_num(), i);
 
         if (!early_terminate){
-            isPrime[k] = 0;
+            localisPrime[i] = 0;
             shouldStop = 1;
         }
              //  [Seq-Opt]: can use a goto to reduce this
         else
-            isPrime[k] = 1;
+            localisPrime[i] = 1;
     }
 
     int ret = 1;
     for (rm_int i = 0; i < k; i++)
-        ret = ret && isPrime[k];
+        ret = ret && localisPrime[i];
 
-    free(isPrime);
+    free(localisPrime);
     return ret;
 }
 
@@ -342,9 +355,9 @@ int rabin_miller_v3_parallel(rm_int test_num, rm_int k)
 
     //  int *isPrime = (int *)(malloc(sizeof(int) * (k + 1)));
     //  for(int i=0; i<k+1; i++)  isPrime[i] = 1;
-    memset(isPrime, 0, k+1);
+    memset(isPrime, 0, sizeof(char)*(k+1));
 
-    char shouldStop = 0;
+    volatile char shouldStop = 0;
 
 #pragma omp parallel for num_threads(PTHREAD)
     for (rm_int i = 0; i < k; i++)
@@ -356,6 +369,7 @@ int rabin_miller_v3_parallel(rm_int test_num, rm_int k)
         int early_terminate = 0;
         if ((x == 1) || (x == test_num - 1)) //  if x = 1 or x = n − 1 then do next LOOP
         {
+            isPrime[i] = 1;
             continue;
         }
         for (rm_int r = 1; r < s; r++)
@@ -378,17 +392,17 @@ int rabin_miller_v3_parallel(rm_int test_num, rm_int k)
         //  printf("RM from thread = %d, i is: %d\n", omp_get_thread_num(), i);
 
         if (!early_terminate){
-            isPrime[k] = 0;
+            isPrime[i] = 0;
             shouldStop = 1;
         }
              //  [Seq-Opt]: can use a goto to reduce this
         else
-            isPrime[k] = 1;
+            isPrime[i] = 1;
     }
 
     int ret = 1;
     for (rm_int i = 0; i < k; i++)
-        ret = ret && isPrime[k];
+        ret = ret && isPrime[i];
 
     return ret;
 }

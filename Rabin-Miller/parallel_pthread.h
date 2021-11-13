@@ -6,7 +6,7 @@
 #include <string.h>
 #include "utils.h"
 
-#define PTHREAD 8
+#define PTHREAD 1
 
 static pthread_t running_threads[PTHREAD];
 

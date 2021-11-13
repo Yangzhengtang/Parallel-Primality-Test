@@ -7,17 +7,16 @@ void testbench_single(rm_int start, rm_int end, rm_int round, int f_index)
 
     FILE *logfd;
     logfd = fopen("benchmarking.txt", "a+");
-
-    printf("\n\t********** Now benchmarking **********\n");
-    printf("\t* checking all numbers from " _rm_pformat_ " to " _rm_pformat_ "\n", start, end);
-    printf("\t* each number will be tested for " _rm_pformat_ " round\n", round);
-    printf("\t* For parallel version, we are using " _rm_pformat_ " threads.\n", PTHREAD);
+    
+    fprintf(logfd, "\t* " _rm_pformat_ " to " _rm_pformat_ " for " _rm_pformat_ " round " , start, end, round);
+    printf("\t* " _rm_pformat_ " to " _rm_pformat_ " for " _rm_pformat_ " round " , start, end, round);
 
     mr_func func_to_test = mr_func_table[f_index];
 
     clock_t t_start = clock(), diff;
-    for (int i = start; i < end; i++)
+    for (rm_int i = start; i < end; i++)
     {
+        //  printf("Testing %llu\n", i);
         func_to_test(i, round);
     }
     diff = clock() - t_start;
@@ -39,23 +38,28 @@ void testbench_all(rm_int start, rm_int end, rm_int round)
 
 int main()
 {
-    
+    printf("For parallel version, we are using %d threads.\n", PTHREAD);
+
     rm_int start  = 2;
     rm_int end    = 4;
-    rm_int round  = 1000;
+    
 
     //  sleep(60);
-    for(int i=0; i<62; i++){
+    for(int i=0; i<64; i++){
         //  testbench_single(start, end, round, 3);
         //  testbench_single(start, end, round, 4);
         //  testbench_single(start, end, round, 6);
-        testbench_single(start, end, round, 7);
-        testbench_single(start, end, round, 8);
-        end = end * 2;
-        start = start * 2;
+        //  testbench_single(start, end, round, 7);
+        //  testbench_single(start, end, round, 8);
+        end = start + (unsigned long long)(0x100);
+        for(rm_int round=2; round < (rm_int)(0XFFFF); round<<=1){
+            //  testbench_all(start, end, round);
+            testbench_single(start, end, round, 0);
+            testbench_single(start, end, round, 6);
+        }
+        start = start << 1;
     }
-
-
+    
     //  testbench_all(500, 500000, 100);
     return 0;
 }
