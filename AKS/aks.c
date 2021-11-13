@@ -1,7 +1,6 @@
 #include "aks.h"
 
-int aks (mpz_t n)
-{
+int aks (mpz_t n) {
   /* Step 1: perfect power */
   if (mpz_perfect_power_p(n)) {
     return COMPOSITE;
@@ -57,6 +56,7 @@ int aks (mpz_t n)
     mpz_clear(logn);
     return PRIME;
   }
+  
   /* Step 3: polynomial check */
   mpz_t amax;			/* Upper bound of a = 2 * sqrt(r) * logn */
   mpz_init_set_ui(amax, 2);
