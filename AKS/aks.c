@@ -162,7 +162,6 @@ int aks (mpz_t n) {
   mpz_clear(b);
   mpz_clear(bmax);
 #endif
-
   /* Step 4: after all... */
   return PRIME;
 }

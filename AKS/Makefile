@@ -1,9 +1,8 @@
-CC := g++
+CC := gcc
 CFLAGS := -fopenmp
 LDFLAGS	:= -lgmp
 
 aks: aks.o poly.o sieve.o main.o
-	$(CC) $(LDFLAGS) -o $@ $^ $(CFLAGS)
 
 main.o: main.c
 	$(CC) $(LDFLAGS) -c $< $(CFLAGS)
@@ -20,4 +19,4 @@ sieve.o: sieve.c
 
 .PHONY: clean
 clean: clean
-	$(RM)	*.o
+	$(RM)	*.o aks.out aks

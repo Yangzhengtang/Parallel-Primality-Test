@@ -1,5 +1,13 @@
 #include "poly.h"
 
+inline void get_polynomial_coef (mpz_t* p_coef, Polynomial* p_poly, unsigned int order) {
+  if (order > p_poly->deg) {
+    mpz_init_set_ui(*p_coef, 0);
+    return;
+  }
+  mpz_set(*p_coef, p_poly->coef[order]);
+}
+
 void initialize_polynomial (Polynomial** pp_poly, unsigned int deg)
 {
   (*pp_poly) = (Polynomial*)malloc(sizeof(Polynomial));
