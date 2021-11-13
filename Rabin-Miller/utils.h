@@ -26,7 +26,7 @@ rm_int getRandom(rm_int n){
     rm_int r = rand() % (n+1);
     rm_int ret = r > 2 ? r : 2;
 #ifndef _64BIT_
-    return ret;   //  Should consider 0
+    return ret;
 #else
     ret = r * r;
     ret = ret > 2 ? r : 2;

@@ -27,7 +27,7 @@ void print_single_input()
     rm_int test_num;
     printf("Please enter the number to check:\n");
     scanf(_rm_pformat_, &test_num);
-    print_primality_single_func(rabin_miller_v2_parallel, test_num, testing_round);
+    print_primality_single_func(rabin_miller_pthread_parallel_opt, test_num, testing_round);
 }
 
 void print_prime_in_range(rm_int start, rm_int end, rm_int round, int f_index)

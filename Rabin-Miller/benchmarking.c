@@ -1,4 +1,5 @@
 #include "test_utils.h"
+#include <unistd.h>
 
 void testbench_single(rm_int start, rm_int end, rm_int round, int f_index)
 {
@@ -8,7 +9,7 @@ void testbench_single(rm_int start, rm_int end, rm_int round, int f_index)
     logfd = fopen("benchmarking.txt", "a+");
 
     printf("\n\t********** Now benchmarking **********\n");
-    printf("\t* checking all numbers from " _rm_pformat_ "to " _rm_pformat_ "\n", start, end);
+    printf("\t* checking all numbers from " _rm_pformat_ " to " _rm_pformat_ "\n", start, end);
     printf("\t* each number will be tested for " _rm_pformat_ " round\n", round);
     printf("\t* For parallel version, we are using " _rm_pformat_ " threads.\n", PTHREAD);
 
@@ -22,8 +23,8 @@ void testbench_single(rm_int start, rm_int end, rm_int round, int f_index)
     diff = clock() - t_start;
 
     int msec = diff * 1000 / CLOCKS_PER_SEC;
-    fprintf(logfd, "%35s: Time taken " _rm_pformat_ " seconds " _rm_pformat_ " milliseconds\n", mr_func_name_table[f_index], msec / 1000, msec % 1000);
-    printf("\t%s: Time taken " _rm_pformat_ " seconds " _rm_pformat_ " milliseconds\n", mr_func_name_table[f_index], msec / 1000, msec % 1000);
+    fprintf(logfd, "%35s: Time taken %d seconds %d milliseconds\n", mr_func_name_table[f_index], msec / 1000, msec % 1000);
+    printf("\t%s: Time taken %d seconds %d milliseconds\n", mr_func_name_table[f_index], msec / 1000, msec % 1000);
 
     close(logfd);
 }
@@ -43,10 +44,13 @@ int main()
     rm_int end    = 4;
     rm_int round  = 1000;
 
+    //  sleep(60);
     for(int i=0; i<62; i++){
-        //  testbench_single(start, end, round, 0);
         //  testbench_single(start, end, round, 3);
-        testbench_single(start, end, round, 0);
+        //  testbench_single(start, end, round, 4);
+        //  testbench_single(start, end, round, 6);
+        testbench_single(start, end, round, 7);
+        testbench_single(start, end, round, 8);
         end = end * 2;
         start = start * 2;
     }

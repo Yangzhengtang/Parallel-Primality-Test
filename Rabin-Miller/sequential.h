@@ -96,7 +96,7 @@ int rabin_miller_shitty(rm_int test_num, rm_int k){
         s += 1;
     }
 
-    int *isComposite = (int*) (malloc(sizeof(int) * k));
+    int *isPrime = (int*) (malloc(sizeof(int) * k));
 
     for (rm_int i = 0; i < k; i++)
     { //  [Par-Opt]   This for loop can be performed in parallel
@@ -125,16 +125,16 @@ int rabin_miller_shitty(rm_int test_num, rm_int k){
         }
         //  printf("RM from thread = %d, i is: %d\n", omp_get_thread_num(), i);
         if (!early_terminate)
-            isComposite[k] = 0; //  [Seq-Opt]: can use a goto to reduce this
+            isPrime[k] = 0; //  [Seq-Opt]: can use a goto to reduce this
         else
-            isComposite[k] = 1;
+            isPrime[k] = 1;
     }
 
     int ret = 1;
     for (rm_int i = 0; i < k; i++)
-        ret = ret && isComposite[k];
+        ret = ret && isPrime[k];
 
-    free(isComposite);
+    free(isPrime);
     return ret;
 }
 
