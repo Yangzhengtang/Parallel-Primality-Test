@@ -24,7 +24,7 @@ for impl in impl_list:
     tempDf = df.filter(items=['Start', impl])
     tempDf = tempDf.rename(columns={impl: "Time"})
 
-    tempDf['Time'] = tempDf['Time'].apply(lambda x: (x*100))
+    # tempDf['Time'] = tempDf['Time'].apply(lambda x: (x*100))
 
     out = tempDf.to_dict(orient='records')
     for item in out:

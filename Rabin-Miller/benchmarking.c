@@ -41,7 +41,7 @@ void testbench_compare(rm_int start, rm_int end, rm_int round, int func_1, int f
     my_srand();
 
     FILE *logfd;
-    logfd = fopen("benchmarking.txt", "a+");
+    logfd = fopen("./result/benchmarking.txt", "a+");
     
     fprintf(logfd, _rm_pformat_ ", " _rm_pformat_ ", " _rm_pformat_ ", " , start, end, round);
     printf(_rm_pformat_ ", " _rm_pformat_ ", " _rm_pformat_ ", " , start, end, round);
