@@ -5,7 +5,7 @@
 #include <string.h>
 #include "utils.h"
 
-#define PTHREAD 1
+#define PTHREAD 16
 
 #define MAX_ROUND  (rm_int)(0xFFFF)
 static char isPrime[MAX_ROUND] = {0};
@@ -352,6 +352,107 @@ int rabin_miller_v3_parallel(rm_int test_num, rm_int k)
         d = d >> 1;
         s += 1;
     }
+
+    //  int *isPrime = (int *)(malloc(sizeof(int) * (k + 1)));
+    //  for(int i=0; i<k+1; i++)  isPrime[i] = 1;
+    memset(isPrime, 0, sizeof(char)*(k+1));
+
+    volatile char shouldStop = 0;
+
+#pragma omp parallel for num_threads(PTHREAD)
+    for (rm_int i = 0; i < k; i++)
+    {                     
+        if(shouldStop)
+            continue;
+        rm_int a = getRandom(test_num - 1); //  pick a randomly in the range [2, n − 1]
+        rm_int x = expoMod(a, d, test_num);
+        int early_terminate = 0;
+        if ((x == 1) || (x == test_num - 1)) //  if x = 1 or x = n − 1 then do next LOOP
+        {
+            isPrime[i] = 1;
+            continue;
+        }
+        for (rm_int r = 1; r < s; r++)
+        {
+            if(shouldStop)  //  Some other thread prove that it's a composite
+            {
+                break;
+            }
+            x = expoMod(x, 2, test_num);
+            if (x == 1)
+            {
+                break;
+            }
+            if (x == test_num - 1)
+            {
+                early_terminate = 1;
+                break;
+            }
+        }
+        //  printf("RM from thread = %d, i is: %d\n", omp_get_thread_num(), i);
+
+        if (!early_terminate){
+            isPrime[i] = 0;
+            shouldStop = 1;
+        }
+             //  [Seq-Opt]: can use a goto to reduce this
+        else
+            isPrime[i] = 1;
+    }
+
+    int ret = 1;
+    for (rm_int i = 0; i < k; i++)
+        ret = ret && isPrime[i];
+
+    return ret;
+}
+
+
+
+//  Stop mallocing and freeing
+int rabin_miller_v3_parallel_opt(rm_int test_num, rm_int k)
+{
+    //  First do some input validation
+    if (test_num < 2)
+        return 0;
+    if (test_num == 2)
+        return 1;
+
+    //  write n − 1 as (2^s)*d with d odd by factoring powers of 2 from n − 1
+    rm_int d = test_num - 1;
+    rm_int s = 0;
+
+    //  Keep dividing the temp_num until it is an odd number
+    while (!(d & 1))
+    {
+        d = d >> 1;
+        s += 1;
+    }
+
+    //  Add one sequential check
+    for(int i = 0; i<PTHREAD; i++){
+        rm_int f_a = getRandom(test_num - 1);   //  pick a randomly in the range [2, n − 1]
+        //  printf("The random number is %llu\n", a);
+        rm_int f_x = expoMod(f_a, d, test_num);
+        //  printf("\tGot x: %llu\n", x);
+        int early_terminate = 0;
+        if(!((f_x == 1) || (f_x == test_num-1)))   //  if x = 1 or x = n − 1 then do next LOOP
+        {
+            for(rm_int r=1; r<s; r++){
+                f_x = expoMod(f_x, 2, test_num);
+                //  printf("\tAt round %llu, got %llu\n", r, x);
+                if(f_x == 1){
+                    //printf("got witness at %d\n", x);
+                    return 0;
+                }  
+            }
+        }
+    }
+
+    if(k > (unsigned int)PTHREAD)
+        k = k - PTHREAD;
+    else
+        return 1;
 
     //  int *isPrime = (int *)(malloc(sizeof(int) * (k + 1)));
     //  for(int i=0; i<k+1; i++)  isPrime[i] = 1;
