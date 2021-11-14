@@ -16,6 +16,8 @@ gcc -fopenmp ./rm_test.c -o rabin_miller.out
 ## AKS Algo
 To use OpenMP support:
 ```
+# make sure to run `make clean` before make
+make clean
 make
 aks -n [number]
 or

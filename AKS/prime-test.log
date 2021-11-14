@@ -1,4 +1,4 @@
-WARNING (11/14/21 14:40:03): LAUNCHER_WORKDIR variable not set. Using current directory.
+WARNING (11/14/21 15:13:45): LAUNCHER_WORKDIR variable not set. Using current directory.
 Launcher: Setup complete.
 
 ------------- SUMMARY ---------------
@@ -6,34 +6,65 @@ Launcher: Setup complete.
    Working directory:  /home1/08395/lxx599/Parallel-Primality-Test/AKS
    Processes per host: 48
    Total processes:    48
-   Total jobs:         8
+   Total jobs:         20
    Scheduling method:  dynamic
 
 -------------------------------------
 Launcher: Starting parallel tasks...
-using /tmp/launcher.8766725.hostlist.OoTIrEQV to get hosts
-starting job on c476-003
-Launcher: Task 3 running job 1 on c476-003.stampede2.tacc.utexas.edu (#!/bin/sh)
-Launcher: Task 10 running job 2 on c476-003.stampede2.tacc.utexas.edu (mkdir ./test-res)
-Launcher: Task 13 running job 3 on c476-003.stampede2.tacc.utexas.edu (aks -f selected.txt > test-res/serial.csv)
+using /tmp/launcher.8766821.hostlist.cHUyk3HV to get hosts
+starting job on c486-072
+Warning: Permanently added 'c486-072' (ECDSA) to the list of known hosts.
+Launcher: Task 17 running job 3 on c486-072.stampede2.tacc.utexas.edu (echo "n, logn, isPrime, time" > test-res/serial.csv)
+Launcher: Task 47 running job 4 on c486-072.stampede2.tacc.utexas.edu (aks -f selected.txt >> test-res/serial.csv)
+Launcher: Task 23 running job 2 on c486-072.stampede2.tacc.utexas.edu (mkdir ./test-res)
+Launcher: Task 5 running job 1 on c486-072.stampede2.tacc.utexas.edu (#!/bin/sh)
+Launcher: Task 37 running job 5 on c486-072.stampede2.tacc.utexas.edu (echo "n, logn, isPrime, time" > test-res/para-2.csv)
+Launcher: Task 42 running job 6 on c486-072.stampede2.tacc.utexas.edu (OMP_NUM_THREADS=2 aks_para -f selected.txt >> test-res/para-2.csv)
 mkdir: cannot create directory ‘./test-res’: File exists
 Launcher: Job 1 completed in 0 seconds.
+Launcher: Task 14 running job 8 on c486-072.stampede2.tacc.utexas.edu (OMP_NUM_THREADS=4 aks_para -f selected.txt >> test-res/para-4.csv)
+Launcher: Task 19 running job 7 on c486-072.stampede2.tacc.utexas.edu (echo "n, logn, isPrime, time" > test-res/para-4.csv)
+Launcher: Job 3 completed in 0 seconds.
+Launcher: Job 5 completed in 0 seconds.
 Launcher: Job 2 completed in 0 seconds.
-Launcher: Task 42 running job 4 on c476-003.stampede2.tacc.utexas.edu (OMP_NUM_THREADS=2 aks_para -f selected.txt > test-res/para-2.csv)
-Launcher: Task 3 running job 5 on c476-003.stampede2.tacc.utexas.edu (OMP_NUM_THREADS=4 aks_para -f selected.txt > test-res/para-4.csv)
-Launcher: Task 10 running job 6 on c476-003.stampede2.tacc.utexas.edu (OMP_NUM_THREADS=8 aks_para -f selected.txt > test-res/para-8.csv)
-Launcher: Task 18 running job 7 on c476-003.stampede2.tacc.utexas.edu (OMP_NUM_THREADS=16 aks_para -f selected.txt > test-res/para-16.csv)
-Launcher: Task 36 running job 8 on c476-003.stampede2.tacc.utexas.edu (OMP_NUM_THREADS=48 aks_para -f selected.txt > test-res/para-48.csv)
-Launcher: Job 3 completed in 132 seconds.
-Launcher: Task 13 done. Exiting.
-Launcher: Job 6 completed in 132 seconds.
-Launcher: Task 10 done. Exiting.
-Launcher: Job 8 completed in 132 seconds.
-Launcher: Task 36 done. Exiting.
-Launcher: Job 4 completed in 135 seconds.
+Launcher: Job 7 completed in 0 seconds.
+Launcher: Task 5 running job 9 on c486-072.stampede2.tacc.utexas.edu (echo "n, logn, isPrime, time" > test-res/para-8.csv)
+Launcher: Task 37 running job 10 on c486-072.stampede2.tacc.utexas.edu (OMP_NUM_THREADS=8 aks_para -f selected.txt >> test-res/para-8.csv)
+Launcher: Task 17 running job 12 on c486-072.stampede2.tacc.utexas.edu (OMP_NUM_THREADS=16 aks_para -f selected.txt >> test-res/para-16.csv)
+Launcher: Task 23 running job 11 on c486-072.stampede2.tacc.utexas.edu (echo "n, logn, isPrime, time" > test-res/para-16.csv)
+Launcher: Job 9 completed in 0 seconds.
+Launcher: Task 19 running job 13 on c486-072.stampede2.tacc.utexas.edu (echo "n, logn, isPrime, time" > test-res/para-32.csv)
+Launcher: Job 11 completed in 0 seconds.
+Launcher: Job 13 completed in 0 seconds.
+Launcher: Task 5 running job 14 on c486-072.stampede2.tacc.utexas.edu (OMP_NUM_THREADS=32 aks_para -f selected.txt >> test-res/para-32.csv)
+Launcher: Task 23 running job 15 on c486-072.stampede2.tacc.utexas.edu (OMP_NUM_THREADS=32 aks_para -f selected.txt >> test-res/para-32.csv)
+Launcher: Task 19 running job 16 on c486-072.stampede2.tacc.utexas.edu (OMP_NUM_THREADS=32 aks_para -f selected.txt >> test-res/para-32.csv)
+Launcher: Task 7 running job 17 on c486-072.stampede2.tacc.utexas.edu (OMP_NUM_THREADS=32 aks_para -f selected.txt >> test-res/para-32.csv)
+Launcher: Task 45 running job 18 on c486-072.stampede2.tacc.utexas.edu (OMP_NUM_THREADS=32 aks_para -f selected.txt >> test-res/para-32.csv)
+Launcher: Task 26 running job 20 on c486-072.stampede2.tacc.utexas.edu (OMP_NUM_THREADS=32 aks_para -f selected.txt >> test-res/para-32.csv)
+Launcher: Task 39 running job 19 on c486-072.stampede2.tacc.utexas.edu (OMP_NUM_THREADS=32 aks_para -f selected.txt >> test-res/para-32.csv)
+Launcher: Job 14 completed in 57 seconds.
+Launcher: Task 5 done. Exiting.
+Launcher: Job 16 completed in 59 seconds.
+Launcher: Task 19 done. Exiting.
+Launcher: Job 19 completed in 59 seconds.
+Launcher: Task 39 done. Exiting.
+Launcher: Job 17 completed in 59 seconds.
+Launcher: Task 7 done. Exiting.
+Launcher: Job 15 completed in 60 seconds.
+Launcher: Task 23 done. Exiting.
+Launcher: Job 18 completed in 59 seconds.
+Launcher: Task 45 done. Exiting.
+Launcher: Job 20 completed in 61 seconds.
+Launcher: Task 26 done. Exiting.
+Launcher: Job 12 completed in 68 seconds.
+Launcher: Task 17 done. Exiting.
+Launcher: Job 10 completed in 78 seconds.
+Launcher: Task 37 done. Exiting.
+Launcher: Job 8 completed in 101 seconds.
+Launcher: Task 14 done. Exiting.
+Launcher: Job 6 completed in 124 seconds.
 Launcher: Task 42 done. Exiting.
-Launcher: Job 5 completed in 135 seconds.
-Launcher: Task 3 done. Exiting.
-Launcher: Job 7 completed in 134 seconds.
-Launcher: Task 18 done. Exiting.
+Launcher: Job 4 completed in 155 seconds.
+Launcher: Task 47 done. Exiting.
 Launcher: Done. Job exited without errors
