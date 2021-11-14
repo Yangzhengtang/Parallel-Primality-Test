@@ -24,7 +24,7 @@ int sieve_primality_test (unsigned int n, Sieve* p_sieve)
     if (mpz_tstbit(p_sieve->table, i) == 0) {
       unsigned int j;
       for (j = i * 2; j <= p_sieve->size; j += i) {
-	mpz_setbit(p_sieve->table, j);
+	      mpz_setbit(p_sieve->table, j);
       }
     }
   }

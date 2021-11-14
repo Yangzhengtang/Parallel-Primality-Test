@@ -1,19 +1,12 @@
 #include "poly.h"
 
-inline void get_polynomial_coef (mpz_t* p_coef, Polynomial* p_poly, unsigned int order) {
-  if (order > p_poly->deg) {
-    mpz_init_set_ui(*p_coef, 0);
-    return;
-  }
-  mpz_set(*p_coef, p_poly->coef[order]);
-}
-
 void initialize_polynomial (Polynomial** pp_poly, unsigned int deg)
 {
   (*pp_poly) = (Polynomial*)malloc(sizeof(Polynomial));
   (*pp_poly)->coef = (mpz_t*)malloc((deg + 1) * sizeof(mpz_t));
   (*pp_poly)->deg = deg;
   unsigned int i;
+  
   for (i = 0; i <= deg; i++) {
     mpz_init_set_ui((*pp_poly)->coef[i], 0);
   }
@@ -74,7 +67,7 @@ int is_equal_polynomial (Polynomial* p_poly0, Polynomial* p_poly1)
   return 1;
 }
 
-void set_polynomial_coef (Polynomial* p_poly, unsigned int order, mpz_t* p_coef)
+void set_polynomial_coef (Polynomial* p_poly, unsigned int order, const mpz_t* p_coef)
 {
   if (order <= p_poly->deg) {
     mpz_set(p_poly->coef[order], *p_coef);

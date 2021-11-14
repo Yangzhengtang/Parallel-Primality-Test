@@ -1,0 +1,39 @@
+WARNING (11/14/21 14:40:03): LAUNCHER_WORKDIR variable not set. Using current directory.
+Launcher: Setup complete.
+
+------------- SUMMARY ---------------
+   Number of hosts:    1
+   Working directory:  /home1/08395/lxx599/Parallel-Primality-Test/AKS
+   Processes per host: 48
+   Total processes:    48
+   Total jobs:         8
+   Scheduling method:  dynamic
+
+-------------------------------------
+Launcher: Starting parallel tasks...
+using /tmp/launcher.8766725.hostlist.OoTIrEQV to get hosts
+starting job on c476-003
+Launcher: Task 3 running job 1 on c476-003.stampede2.tacc.utexas.edu (#!/bin/sh)
+Launcher: Task 10 running job 2 on c476-003.stampede2.tacc.utexas.edu (mkdir ./test-res)
+Launcher: Task 13 running job 3 on c476-003.stampede2.tacc.utexas.edu (aks -f selected.txt > test-res/serial.csv)
+mkdir: cannot create directory ‘./test-res’: File exists
+Launcher: Job 1 completed in 0 seconds.
+Launcher: Job 2 completed in 0 seconds.
+Launcher: Task 42 running job 4 on c476-003.stampede2.tacc.utexas.edu (OMP_NUM_THREADS=2 aks_para -f selected.txt > test-res/para-2.csv)
+Launcher: Task 3 running job 5 on c476-003.stampede2.tacc.utexas.edu (OMP_NUM_THREADS=4 aks_para -f selected.txt > test-res/para-4.csv)
+Launcher: Task 10 running job 6 on c476-003.stampede2.tacc.utexas.edu (OMP_NUM_THREADS=8 aks_para -f selected.txt > test-res/para-8.csv)
+Launcher: Task 18 running job 7 on c476-003.stampede2.tacc.utexas.edu (OMP_NUM_THREADS=16 aks_para -f selected.txt > test-res/para-16.csv)
+Launcher: Task 36 running job 8 on c476-003.stampede2.tacc.utexas.edu (OMP_NUM_THREADS=48 aks_para -f selected.txt > test-res/para-48.csv)
+Launcher: Job 3 completed in 132 seconds.
+Launcher: Task 13 done. Exiting.
+Launcher: Job 6 completed in 132 seconds.
+Launcher: Task 10 done. Exiting.
+Launcher: Job 8 completed in 132 seconds.
+Launcher: Task 36 done. Exiting.
+Launcher: Job 4 completed in 135 seconds.
+Launcher: Task 42 done. Exiting.
+Launcher: Job 5 completed in 135 seconds.
+Launcher: Task 3 done. Exiting.
+Launcher: Job 7 completed in 134 seconds.
+Launcher: Task 18 done. Exiting.
+Launcher: Done. Job exited without errors
