@@ -5,7 +5,7 @@
 #include <string.h>
 #include "utils.h"
 
-#define PTHREAD 16
+#define PTHREAD 2
 
 #define MAX_ROUND  (rm_int)(0xFFFF)
 static char isPrime[MAX_ROUND] = {0};

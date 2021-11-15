@@ -68,9 +68,56 @@ void print_prime_under_1000_for_all()
     }
 }
 
+void testFromInput() {
+    //  bignum_init();
+    char str[1024];
+    printf("Please enter a large number\n");
+    scanf("%s", str);
+    mpz_t n;
+    mpz_init(n);
+    mpz_set_str(n, str, 10);
+    
+    int round = 128;
+    int ans = bignum_rabin_miller_sf(n, round);
+
+    mpz_clear(n);
+    printf("Output: %d\n", ans);
+}
+
+void testForRange(unsigned long exp) {
+    //  bignum_init();
+    mpz_t n;
+    mpz_init_set_ui(n, 2);
+    mpz_pow_ui(n, n, exp);
+
+    int round = 128;
+    int range = 0x400;
+
+    clock_t t_start, diff;
+    t_start = clock();
+
+    for(int i=0; i<range; i++){
+        int ans = bignum_rabin_miller_sf(n, round);
+        //  if(ans) gmp_printf("Find prime: %Zd\n", n);
+        mpz_add_ui(n, n, 1);
+    }
+
+    diff = clock() - t_start;
+
+    int msec = diff * 1000 / CLOCKS_PER_SEC;
+    //  fprintf(logfd, "%d, ", msec);
+    printf("%lu, %d\n", exp, msec);
+    mpz_clear(n);
+}
+
 int main()
 {
+    testForRange(2048);
+    //testFromInput();
+    //  New gmp version:
+    
+    //  The original one: deprecated...
     //  print_single_input();
-    print_prime_under_1000_for_all();
+    //  print_prime_under_1000_for_all();
     return 0;
 }

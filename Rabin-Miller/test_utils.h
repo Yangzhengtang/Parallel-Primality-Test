@@ -1,6 +1,9 @@
 #include "sequential.h"
 #include "parallel.h"
 #include "parallel_pthread.h"
+#include "seq_bignum.h"
+#include <sys/time.h>
+#include <gmp.h>
 
 #define ARRAY_MAX 512
 #define STR_MAX 128
@@ -36,9 +39,22 @@ static inline void my_srand()
 {
     if (rand_initialized == 0)
         return;
-    //  omp_set_dynamic(0);
+    omp_set_dynamic(0);
     omp_set_num_threads(PTHREAD);
     srand(time(NULL));
     rand_initialized = 1;
     return;
 }
+
+/* //extern gmp_randstate_t global_rstate;
+static char bignum_initialized = 0;
+static inline void bignum_init()
+{
+    if (bignum_initialized == 0)
+        return;
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    gmp_randinit_default(global_rstate);
+    gmp_randseed_ui(global_rstate, tv.tv_usec);
+    bignum_initialized = 1;
+} */
