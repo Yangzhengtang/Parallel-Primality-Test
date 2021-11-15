@@ -91,7 +91,7 @@ void testForRange(unsigned long exp, int round) {
     mpz_pow_ui(n, n, exp);
 
     //  int range = 0x1000;
-    int range = 50;
+    int range = 1000;
 
     clock_t t_start, diff;
     t_start = clock();
@@ -286,13 +286,14 @@ void newTestForRange(unsigned long exp) {
 int main()
 {
     //  testForPrime_Compo(32);
-    
+init_local(MAX_ROUND);
     for(unsigned long i = 1; i<=0xFFFFF; i*=2)
         //  newTestForRange(i); */
         {
             for(int j=1; j<=0x1000; j*=2)
                 testForRange(i,j);
         }
+clear_local(MAX_ROUND);
     //testFromInput();
     //  New gmp version:
     

@@ -255,10 +255,12 @@ ret_0:
 
 #define MAX_ROUND  0xFFFF
 static char bigNumIsPrime[MAX_ROUND] = {0};
+static mpz_t a_array[MAX_ROUND] = {0};
+static mpz_t x_array[MAX_ROUND] = {0};
 
-#define THREAD_NUM 4
+#define THREAD_NUM 2
 #define SEQ_PART 64
-/* void init_local(int k){
+void init_local(int k){
     for(int i=0; i<=k; i++){
         mpz_init(a_array[i]);
         mpz_init(x_array[i]);
@@ -268,9 +270,9 @@ static char bigNumIsPrime[MAX_ROUND] = {0};
 void clear_local(int k){
     for(int i=0; i<=k; i++){
         mpz_clear(a_array[i]);
-        mpz_init(x_array[i]);
+        mpz_clear(x_array[i]);
     }
-} */
+}
 
 int bignum_rabin_miller_para(mpz_t test_num, int k){
     if(mpz_cmp_ui(test_num, 2) < 0)
@@ -367,22 +369,22 @@ int bignum_rabin_miller_para(mpz_t test_num, int k){
             continue;
         }    
         
-        mpz_t a;
-        mpz_t x;
-        mpz_init(a);
-        mpz_init(x);
+        //  mpz_t a = *(a_array + i);
+        //  mpz_t x = *(x_array + i);
+        //  mpz_init(a);
+        //  mpz_init(x);
 
-        mpz_urandomm(a, rstate, rand_limit);    //  pick a randomly in the range [2, n − 1]
+        mpz_urandomm(a_array+i, rstate, rand_limit);    //  pick a randomly in the range [2, n − 1]
         
-        while(mpz_cmp_ui(a, 2)<0){
-            mpz_urandomm(a, rstate, rand_limit);
+        while(mpz_cmp_ui(a_array[i], 2)<0){
+            mpz_urandomm(a_array+i, rstate, rand_limit);
         }
         
-        mpz_powm(x, a, d, test_num);
+        mpz_powm(x_array+i, a_array+i, d, test_num);
         int early_terminate = 0;
-        if(mpz_cmp_ui(x,1)==0 || mpz_cmp(x, rand_limit)==0){
-            mpz_clear(a);
-            mpz_clear(x);
+        if(mpz_cmp_ui(x_array[i],1)==0 || mpz_cmp(x_array[i], rand_limit)==0){
+            /* mpz_clear(a);
+            mpz_clear(x); */
             bigNumIsPrime[i] = 1;
             continue;
         }   //  if x = 1 or x = n − 1 then do next LOOP
@@ -392,17 +394,17 @@ int bignum_rabin_miller_para(mpz_t test_num, int k){
             if(shouldStop){
                 break;
             }
-            mpz_powm(x, x, two, test_num);   //  This maybe is not the right way...
-            if(mpz_cmp_ui(x,1)==0){
+            mpz_powm(x_array+i, x_array+i, two, test_num);   //  This maybe is not the right way...
+            if(mpz_cmp_ui(*(x_array+i),1)==0){
                 break;
             }  
-            if(mpz_cmp(x, rand_limit)==0){
+            if(mpz_cmp(x_array+i, rand_limit)==0){
                 early_terminate = 1;
                 break;
             }
         }
-        mpz_clear(a);
-        mpz_clear(x);
+        /* mpz_clear(a);
+        mpz_clear(x); */
         if(!early_terminate){
             bigNumIsPrime[i] = 0;
             shouldStop = 1;
