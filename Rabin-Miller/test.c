@@ -91,7 +91,7 @@ void testForRange(unsigned long exp) {
     mpz_pow_ui(n, n, exp);
 
     int round = 128;
-    int range = 0x400;
+    int range = 0x1000;
 
     clock_t t_start, diff;
     t_start = clock();
@@ -107,12 +107,34 @@ void testForRange(unsigned long exp) {
     int msec = diff * 1000 / CLOCKS_PER_SEC;
     //  fprintf(logfd, "%d, ", msec);
     printf("%lu, %d\n", exp, msec);
+
+
+
+    t_start = clock();
+    mpz_t n2;
+    mpz_init_set_ui(n2, 2);
+    mpz_pow_ui(n2, n2, exp);
+    init_local(round);
+    for(int i=0; i<range; i++){
+        int ans = bignum_rabin_miller_para(n2, round);
+        //  if(ans) gmp_printf("Find prime: %Zd\n", n);
+        mpz_add_ui(n2, n2, 1);
+    }
+    clear_local(round);
+    diff = clock() - t_start;
+
+    msec = diff * 1000 / CLOCKS_PER_SEC;
+    //  fprintf(logfd, "%d, ", msec);
+    printf("%lu, %d\n", exp, msec);
+
     mpz_clear(n);
+    mpz_clear(n2);
 }
 
 int main()
 {
-    testForRange(2048);
+    for(unsigned long i = 4; i<=4096; i*=2)
+        testForRange(i);
     //testFromInput();
     //  New gmp version:
     

@@ -1,7 +1,7 @@
 #include "sequential.h"
 #include "parallel.h"
 #include "parallel_pthread.h"
-#include "seq_bignum.h"
+#include "bignum.h"
 #include <sys/time.h>
 #include <gmp.h>
 
