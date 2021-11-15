@@ -258,7 +258,7 @@ static char bigNumIsPrime[MAX_ROUND] = {0};
 static mpz_t a_array[MAX_ROUND] = {0};
 static mpz_t x_array[MAX_ROUND] = {0};
 
-#define THREAD_NUM 2
+//#define THREAD_NUM 2
 #define SEQ_PART 64
 void init_local(int k){
     for(int i=0; i<=k; i++){
@@ -363,7 +363,7 @@ int bignum_rabin_miller_para(mpz_t test_num, int k){
     }
 
 //  Parallel component
-    #pragma omp parallel for num_threads(THREAD_NUM)
+    #pragma omp parallel for
     for(int i=0; i<k; i++){ 
         if(shouldStop){
             continue;
