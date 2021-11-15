@@ -13,11 +13,12 @@ df = pd.read_csv(csvfilePath)
 df['Start'] = pd.to_numeric(df['Start'])
 df['Start'] = df['Start'].apply(lambda x: round(math.log(x, 2)))
 
-df = df.loc[df['Start'] >= 32]
+#df = df.loc[df['Start'] >= 32]
 
 df = df.loc[df['Round'] == 128]
 
-impl_list = ["Seq", "Par-2", "Par-4", "Par-8", "Par-16"]
+#impl_list = ["Seq", "Par-2", "Par-4", "Par-8", "Par-16"]
+impl_list = ["Seq"]
 outputStr = ""
 
 for impl in impl_list:

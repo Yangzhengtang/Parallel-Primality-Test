@@ -75,6 +75,21 @@ void testbench_compare(rm_int start, rm_int end, rm_int round, int func_1, int f
     diff = clock() - t_start;
 
     msec = diff * 1000 / CLOCKS_PER_SEC;
+    fprintf(logfd, "%d, ", msec);
+    printf("%d, ", msec);
+
+
+
+    //  func3
+    t_start = clock();
+    for (rm_int i = start; i < end; i++)
+    {
+        //  printf("Testing %llu\n", i);
+        naive_test(i);
+    }
+    diff = clock() - t_start;
+
+    msec = diff * 1000 / CLOCKS_PER_SEC;
     fprintf(logfd, "%d\n", msec);
     printf("%d\n", msec);
 

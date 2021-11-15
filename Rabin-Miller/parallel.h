@@ -409,6 +409,25 @@ int rabin_miller_v3_parallel(rm_int test_num, rm_int k)
 
 
 
+int naive_test(rm_int test_num){
+      
+
+    volatile char shouldReturn = 0;
+
+    rm_int t = 2;
+    while(t*t < test_num)   t++;
+
+#pragma omp parallel for num_threads(16)
+    for(rm_int div = 2; div < t; div += 1){
+        if (shouldReturn)
+            continue;
+        if (test_num % div == 0)
+            shouldReturn = 1;
+    }
+
+    return (shouldReturn == 0);
+}
+
 //  Stop mallocing and freeing
 int rabin_miller_v3_parallel_opt(rm_int test_num, rm_int k)
 {
