@@ -1,5 +1,6 @@
 #include "aks.h"
 
+// Bernstein’s improvement
 int aks (mpz_t n) {
   /* Step 1: perfect power */
   if (mpz_perfect_power_p(n)) {
@@ -31,7 +32,6 @@ int aks (mpz_t n) {
     }
 
     if (sieve_primality_test(r_ui, &sieve) == PRIME) {
-      // Bernstein’s improvement
       int is_break = 0;
       mpz_t pwm;
       mpz_init(pwm);
@@ -40,9 +40,6 @@ int aks (mpz_t n) {
       while (mpz_cmp(i, imax) <= 0) {
 	      mpz_powm(pwm, n, i, r); // pwm = n ^ i % r
         if (mpz_cmp_ui(pwm, 1) != 0) {
-          // if found r that satisfy n ^ i % r == 1 before the while loop end
-          // then i is not bigger than log^2(n), keep looking.
-          // https://github.com/tingliu/aks-primality-test/issues/2
           is_break = 1;
           break;
         }
